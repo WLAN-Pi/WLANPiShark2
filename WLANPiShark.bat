@@ -264,7 +264,7 @@ goto :end
     echo        Please report to wifinigel@gmail.com
     echo.
     echo    More Information:
-    echo        Visit: https://github.com/wifinigel/WLANPiShark
+    echo        Visit: https://github.com/WLAN-Pi/WLANPiShark2
     echo.
     goto :end
 
