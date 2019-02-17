@@ -16,7 +16,7 @@ import getopt
 import subprocess
 
 __author__ = 'Nigel Bowden'
-__version__ = '0.01'
+__version__ = '0.02'
 __email__ = 'wifinigel@gmail.com'
 __status__ = 'beta'
 
@@ -40,6 +40,14 @@ def usage():
     print("\n Usage:\n")
     print("    wlanpishark.py -i <interface name> -c <channel> -w <channel width> -s <slice value> -f <filter definition>")
     print("    wlanpishark.py -h")
+    print ("\n Command line options:\n")
+    print("    -c       Sets channel to capture on (valid values 1-13, 36-165)")
+    print("    -i       Sets name of wireless interface on WLANPi (usually wlan0 with one adapter attached)")
+    print("    -w       Set channel width to capture (valid values: 20, 40+, 40-, 80MHz")
+    print("    -s       Frame capture slice size (0 = no slice, any other numeric value specifies slice size in bytes)")
+    print('    -f       Filter definition to specify frames captured (uses tcpdump filter syntax - e.g. "wlan type mgt subtype beacon")')
+    print('    -h       Help page')
+    
     print(" ")
     sys.exit()
 
