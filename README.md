@@ -1,34 +1,34 @@
 # WLANPiShark2
 Scripts to enable Wireshark to be run on various laptop types using the WLANPi as a remote packet sniffer  
 
-This project is a spin-off of the original [WLANPiShark project](https://github.com/wifinigel/WLANPiShark). the aim of that project was to allow Windows users to be able to use a WLANPi as a Wi-Fi capture devices, thus providing  an easy way for Windows users to perform packet captures in to Wireshark. However the prject relied on a clunky batcj file that took quita a while to start up, making it a little slow to use.
+This project is a spin-off of the original [WLANPiShark project](https://github.com/wifinigel/WLANPiShark). The aim of that project was to allow Windows users to be able to use a WLANPi as a Wi-Fi capture device, thus providing an easy way for Windows users to perform packet captures in to Wireshark. However the project relied on a clunky batch file that took quite a a while to start up, making it slow to use.
 
-This project aims to perform the same task, but far more efficiently, and across several platforms, beyond just Windows. It does this by leveraging a Python script that is pre-installed on to the WLANPi that does much of the device setup heavy lifting and removes the complexity required in the previous project batch file. 
+This project aims to perform the same task, but far more efficiently, and across several platforms (beyond just Windows). It does this by leveraging a Python script that is pre-installed on to the WLANPi that does much of the device setup heavy lifting, and removes the complexity required in the previous project batch file. 
 
 To initiate the capture, a second script/batch file is executed on the device (e.g. laptop) that wishes to execute the Wirehsark capture, using the WLANPi as a remote probe. 
 
 In this release, there are only 2 scripts:
 
-- WLANPiShark.bat : the Windows batch file to be run on the Windows machine
-- wlanpishark.py : the Python script that is called from the batch to execute all WLANPi setup commands and initiate a tcpdump stream
+- WLANPiShark.bat : the Windows batch file to be run on a Windows machine
+- wlanpishark.py : the Python script that is installed on the WLANPi and iscalled from the batch to execute all WLANPi setup commands and initiate a tcpdump stream
 
 The architecture of the solution is shown in the diagram below:
 
 ![WLANPiShark Overview](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/images/WLANPiShark_Overview.png)
 
-It is hoped this more flexible approach will enable easier development for other platforms to utlise the WLANPi as a remote probe capture device. Additional scripts will be added to this prject over time to provide remote probe capture capability for other operating systems and software packages. 
+It is hoped this more flexible approach will enable easier development for other platforms to utlise the WLANPi as a remote probe capture device. Additional scripts will be added to this project over time to provide remote probe capture capability for other operating systems and software packages. 
 
-The scripts/batch files that are used by this project are lsted below. Each has its own dedicated page detailing its installation and operation:
+The scripts/batch files that are used by this project are listed below. Each has its own dedicated page detailing its installation and operation:
 
 
-- [WLANPiShark.bat](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/doc/WLANPiShark.bat.md) : the Windows batch file to be run on the Windows machine
-- [wlanpishark.py](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/doc/wlanpishark.py.md) : Python script that is called from the batch to execute all WLANPi setup commands and initiate a tcpdump stream
+- [WLANPiShark.bat](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/doc/WLANPiShark.bat.md) : the Windows batch file to be run on a Windows machine
+- [wlanpishark.py](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/doc/wlanpishark.py.md) : Python script that is installed on the WLAPNPi and iscalled from the batch to execute all WLANPi setup commands and initiate a tcpdump stream
 
 # Quick Setp
 
 ## wlanpishark.py
 
-(Note is you are running WLANPi image v1.6.1 or later, this script is already installed on the WLANPi)
+(Note: if you are running WLANPi image v1.6.1 or later, this script is already installed on the WLANPi)
 
 1. SSH to your WLANPi (login with the 'wlanpi' user account)
 2. Create a directory called /home/wlanpi/wlanpishark : mkdir ~/wlanpishark
