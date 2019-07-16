@@ -1,7 +1,7 @@
 # WLANPiShark2
 Scripts to enable Wireshark to be run on various laptop types using the WLANPi as a remote packet sniffer  
 
-(* Seeing "Data written to the pipe is neither a supported pcap format nor pcapng format" messages? See the "Known Issues" section at the bottom of this page *)
+**(Seeing "Data written to the pipe is neither a supported pcap format nor pcapng format" messages? See the "Known Issues" section at the bottom of this page)**
 
 This project is a spin-off of the original [WLANPiShark project](https://github.com/wifinigel/WLANPiShark). The aim of that project was to allow Windows users to be able to use a WLANPi as a Wi-Fi capture device, thus providing an easy way for Windows users to perform packet captures in to Wireshark. However the project relied on a clunky batch file that took quite a a while to start up, making it slow to use.
 
