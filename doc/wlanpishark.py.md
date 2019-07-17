@@ -1,6 +1,8 @@
 # wlanpyshark.py
 
-TBA - development in progress
+This is a companion Python script that resides on the WLANPi to simplify and speed-up the whole launch process. Users will not normally need to modify this script as it is activated by the batch file script on the Windows machine running the capture.
+
+This file will normally be distributed as part of the WLANPi standard image, so will not need to be loaded by an end-user.
 
 # Usage
 
