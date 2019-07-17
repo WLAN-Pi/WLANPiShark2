@@ -60,7 +60,7 @@ REM !
 REM ! Set your variables here, but make sure no trailing spaces 
 REM ! accidentally at end of lines - you WILL have issues!
 REM ! 
-REM ! Remember, 192.168.42.1 is the default WLANPi addreess when
+REM ! Remember, 192.168.42.1 is the default WLANPi address when
 REM ! using Ethernet over USB. Also, change IW_VER from 4.9 to 
 REM ! 4.14 to activate 80MHz support
 REM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -68,14 +68,15 @@ set WLAN_PI_USER=wlanpi
 set WLAN_PI_PWD=wlanpi
 set WLAN_PI_IP=192.168.42.1
 set WIRESHARK_EXE=C:\Program Files\Wireshark\Wireshark.exe
-set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
+rem set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
+set PLINK=C:\Users\Nigel Bowden\Downloads\Plink\0.71\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
 
 REM ############### NOTHING TO SET BELOW HERE #######################
 :init
     set "__NAME=%~n0"
-    set "__VERSION=0.01"
+    set "__VERSION=0.02"
     set "__YEAR=2019"
 
     set "__BAT_FILE=%~0"
@@ -103,6 +104,8 @@ REM ############### NOTHING TO SET BELOW HERE #######################
     
     if /i "%~1"=="-u"         goto :upgrade
     if /i "%~1"=="--upgrade"  goto :upgrade
+    
+    if /i "%~1"=="--diag"     goto :diag
       
     rem If you pass the -d option, Wireshark does not start
     if /i "%~1"=="-d"         set "DEBUG=1" & shift & goto :parse
@@ -145,12 +148,28 @@ REM ############### NOTHING TO SET BELOW HERE #######################
 
 :main
 
+rem Check if we need to apply a fix due to Plink version
+set PLINK_MOD=
+
+rem Read Plink ver
+"%PLINK%" -V > "%TEMP%\plink_ver.txt"
+set /P PLINKVER=<"%TEMP%\plink_ver.txt"
+del "%TEMP%\plink_ver.txt"
+
+rem For v0.71 onwards, we need to put in the -no-antispoof
+If NOT "%PLINKVER%"=="%PLINKVER:0.71=%" set PLINK_MOD=-no-antispoof
+If NOT "%PLINKVER%"=="%PLINKVER:0.72=%" set PLINK_MOD=-no-antispoof
+If NOT "%PLINKVER%"=="%PLINKVER:0.73=%" set PLINK_MOD=-no-antispoof
+If NOT "%PLINKVER%"=="%PLINKVER:0.74=%" set PLINK_MOD=-no-antispoof
+If NOT "%PLINKVER%"=="%PLINKVER:0.75=%" set PLINK_MOD=-no-antispoof
+
+
 if "%DEBUG%"=="1" goto :debug
 
 echo Starting session to device %WLAN_PI_IP% ...
 
 Rem - Start remote commands on WLANPi
-"%PLINK%" -ssh -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -f %FILTER% | "%WIRESHARK_EXE%" -k -i -
+"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -f %FILTER% | "%WIRESHARK_EXE%" -k -i -
 
 goto :end
 
@@ -165,7 +184,7 @@ echo Channel width: %CHANNEL_WIDTH%
 echo Interface: %WLAN_PI_IFACE%
 echo Slice: %SLICE%
 echo Filter: %FILTER%
-"%PLINK%" -ssh -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -d -f %FILTER%
+"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -d -f %FILTER%
 
 goto :end
 
@@ -193,6 +212,7 @@ goto :end
     echo.  %__BAT_NAME% -h, --help          shows basic help
     echo.  %__BAT_NAME% -hh, --xhelp        shows extra help
     echo.  %__BAT_NAME% -v, --version       shows the version
+    echo.  %__BAT_NAME% --diag              shows diagnostic info
     IF "%IW_VER%"=="4.9" (
         echo.  %__BAT_NAME% -u, --upgrade       shows how to enable 80MHz capture
     )
@@ -215,6 +235,7 @@ goto :end
     echo.  %__BAT_NAME% -h, --help          shows basic help
     echo.  %__BAT_NAME% -hh, --xhelp        shows extra help
     echo.  %__BAT_NAME% -v, --version       shows the version
+    echo.  %__BAT_NAME% --diag              shows diagnostic info
     IF "%IW_VER%"=="4.9" (
         echo.  %__BAT_NAME% -u, --upgrade       shows how to enable 80MHz capture
     )
@@ -261,7 +282,7 @@ goto :end
         echo.
     )
     echo    Bugs:
-    echo        Please report to wifinigel@gmail.com
+    echo        Please report to wifinigel@gmail.com (please supply "WLANPiShark.bat --diag" output)
     echo.
     echo    More Information:
     echo        Visit: https://github.com/WLAN-Pi/WLANPiShark2
@@ -283,6 +304,52 @@ goto :end
     echo  (SSH to WLANPi and run : sudo iw --version)
     echo. 
     goto :end    
+
+:diag
+
+rem Check Plink file
+echo ==========================
+echo  Plink checks
+echo ==========================
+echo Plink file path: %PLINK%
+if exist "%PLINK%" (
+    echo File check: Plink file detected OK
+) else (
+    echo File check: Plink file not detected - please check path configured
+)
+
+"%PLINK%" -V > %TEMP%\plink_ver.txt
+set /P PLINKVER=<%TEMP%\plink_ver.txt
+del %TEMP%\plink_ver.txt
+echo Version check: %PLINKVER%
+
+rem Check Wireshark file
+echo ==========================
+echo  Wireshark checks
+echo ==========================
+echo Wireshark file path: %WIRESHARK_EXE%
+if exist "%WIRESHARK_EXE%" (
+    echo File check: Wireshark file detected OK
+) else (
+    echo File check: Wireshark file not detected - please check path configured
+)
+
+"%WIRESHARK_EXE%" -v > %TEMP%\ws_ver.txt
+set /P WSVER=<%TEMP%\ws_ver.txt
+del %TEMP%\ws_ver.txt
+echo Version check: %WSVER%
+
+rem Dump vars
+echo ==========================
+echo  Configured variables
+echo ==========================
+echo WLANPi username: %WLAN_PI_USER%
+echo WLANPi user account pwd: %WLAN_PI_PWD%
+echo WLANPi IP address: %WLAN_PI_IP%
+echo WLANPi wireless LAN interface name: %WLAN_PI_IFACE%
+echo IW version: %IW_VER%
+
+goto :end
 
 :version
     echo.
@@ -310,11 +377,23 @@ REM #################################################################
 REM # 
 REM # Version history;
 REM # 
-REM # v0.1 - N.Bowden 17th Feb 2019
+REM # v0.01 - N.Bowden 17th Feb 2019
 REM #
 REM #        Initial release of spin-off from original WLANPIShark
 REM #        project. Now relies on having wlanpishark.py file on
 REM #        the remote WLANPi to speed up and simplify operations.
+REM # 
+REM # v0.02 - N.Bowden 17th July 2019
+REM #
+REM #        1. Several reports of issues which turned out to be
+REM #           an issue with a new "-no-antispoof" introduced in
+REM #           Plink 0.71. issue did no affect Plink 0.70
+REM #           Added version detection and a fix if version 0.71 to 
+REM #           0.75 is detected (bit of future proofing in there...)
+REM # 
+REM #        2. Added new "--diag" CLI option to do some basic 
+REM #           checks and dump out config data for bug/issue
+REM #           reports
 REM # 
 REM #################################################################
 

@@ -46,10 +46,47 @@ The scripts/batch files that are used by this project are listed below. Each has
 
 (See the dedicated batch file page for full details: [WLANPiShark.bat](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/doc/WLANPiShark.bat.md))
 
+# Current Version
+
+The current version is v0.02. Check your version with the CLI command:
+
+```
+ WLANPiShark.bat -v
+```
+
 # Known Issues
 
-There have been a few reports of users seeing error messages reported by Wirehark relating to the data written to the pipe not being a supported pcap or pcapng format. This is caused by a newer version of Plink.exe than we originally used in our testing. There are no issues with version 0.7.0. Later versions seem to cause an issue (i.e. 0.7.1 and later). Downgrading your version of Plink (by downloading an older version of Putty) to 0.7.0 fixes the issue.
+There have been a few reports of users seeing error messages reported by Wirehark relating to the data written to the pipe not being a supported pcap or pcapng format. 
+
+This is caused by a newer version of Plink.exe than we originally used in our testing. There are no issues with version 0.7.0. Later versions (i.e. 0.7.1 and later) cause an issue due to a new security checking option ("-no-antispoof"). 
+
+Downgrading your version of Plink (by downloading an older version of Putty) to 0.7.0 fixes the issue. Or, a better option is to upgrade to version 0.02 (or later) of this script which now detects your Plink version and works around the issue automatically.
 
 You can check your version of Plink by running "plink.exe -V" from a Windows command prompt.
 
-This issue is under investigation for a more useful fix....watch this space.
+# Release Notes
+```
+#################################################################
+# 
+# Version history;
+# 
+# v0.01 - N.Bowden 17th Feb 2019
+#
+#        Initial release of spin-off from original WLANPIShark
+#        project. Now relies on having wlanpishark.py file on
+#        the remote WLANPi to speed up and simplify operations.
+# 
+# v0.02 - N.Bowden 17th July 2019
+#
+#        1. Several reports of issues which turned out to be
+#           an issue with a new "-no-antispoof" introduced in
+#           Plink 0.71. issue did no affect Plink 0.70
+#           Added version detection and a fix if version 0.71 to 
+#           0.75 is detected (bit of future proofing in there...)
+# 
+#        2. Added new "--diag" CLI option to do some basic 
+#           checks and dump out config data for bug/issue
+#           reports
+# 
+#################################################################
+```
