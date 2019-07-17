@@ -56,11 +56,13 @@ The current version is v0.02. Check your version with the CLI command:
 
 # Known Issues
 
-There have been a few reports of users seeing error messages reported by Wirehark relating to the data written to the pipe not being a supported pcap or pcapng format. 
+There have been a few reports of users seeing error messages reported by Wirehark relating to "data written to the pipe not being a supported pcap or pcapng format" being reported by Wireshark. 
 
 This is caused by a newer version of Plink.exe than we originally used in our testing. There are no issues with version 0.7.0. Later versions (i.e. 0.7.1 and later) cause an issue due to a new security checking option ("-no-antispoof"). 
 
-Downgrading your version of Plink (by downloading an older version of Putty) to 0.7.0 fixes the issue. Or, a better option is to upgrade to version 0.02 (or later) of this script which now detects your Plink version and works around the issue automatically.
+Downgrading your version of Plink (by downloading an older version of Putty) to 0.7.0 fixes the issue. 
+
+A better option is to upgrade your WLANPiShark.bat file to version 0.02 (or later) as it detects your Plink version and works around the Plink issue automatically. There is no need to change anything on the WLANPi, just download the current [WLANPiShark.bat](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/WLANPiShark.bat) file, configure it as per your previous copy on your Windows machine, and run it as before.
 
 You can check your version of Plink by running "plink.exe -V" from a Windows command prompt.
 
