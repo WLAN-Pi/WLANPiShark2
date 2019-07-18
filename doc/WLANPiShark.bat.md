@@ -77,11 +77,12 @@ set WIRESHARK_EXE=C:\Program Files\Wireshark\Wireshark.exe
 set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
+set INTERACTIVE=0
 ```
 ## Usage
 
 ```
- WLANPiShark v0.02 - A Windows batch file to stream tcpdump
+ WLANPiShark v0.03 - A Windows batch file to stream tcpdump
  running on a WLANPi to Wireshark on a Windows machine
 
  USAGE:
@@ -94,12 +95,16 @@ set IW_VER=4.9
   WLANPiShark.bat -hh, --xhelp        shows extra help
   WLANPiShark.bat -v, --version       shows the version
   WLANPiShark.bat --diag              shows diagnostic info
+  WLANPiShark.bat --int               run in interactive mode
   WLANPiShark.bat -u, --upgrade       shows how to enable 80MHz capture
+
+ (To run permanently in interactive mode, set the INTERACTIVE variable to INTERACTIVE=1)
+
 ```
 ## Additional Help
 
 ```
- WLANPiShark v0.02 - A Windows batch file to stream tcpdump
+ WLANPiShark v0.03 - A Windows batch file to stream tcpdump
  running on a WLANPi to Wireshark on a Windows machine
 
  HELP:
@@ -112,7 +117,10 @@ set IW_VER=4.9
   WLANPiShark.bat -hh, --xhelp        shows extra help
   WLANPiShark.bat -v, --version       shows the version
   WLANPiShark.bat --diag              shows diagnostic info
+  WLANPiShark.bat --int               run in interactive mode
   WLANPiShark.bat -u, --upgrade       shows how to enable 80MHz capture
+
+ (To run permanently in interactive mode, set the INTERACTIVE variable to INTERACTIVE=1)
 
   Command Line Capture Options:
 
@@ -150,37 +158,7 @@ set IW_VER=4.9
 
    More Information:
        Visit: https://github.com/WLAN-Pi/WLANPiShark2
-```
-## Examples
 
-1. Capture on channel 52 (default 20Mhz width):
-
-```
-WLANPiShark.bat -c 52
-```
-
-2. Capture on channel 44 with a channel width of 40MHz (channels 44 + 48):
-
-```
-WLANPiShark.bat -c 44 -w 40+
-```
-
-3. Capture on channel 132 using 40MHz channels capturing only the first 200 bytes of each frame:
-
-```
-WLANPiShark.bat -c 132 -w 40+ -s 200
-```
-
-4. Capture on channel 52 using a channel width on 80MHz (assuming 80MHz support enabled - see notes at the top of this page). Note this will capture the 80MHz channel 52 - 64:
-
-```
-WLANPiShark.bat -c 52 -w 80
-```
-
-5. Capture only beacon frames on channel 100:
-
-```
-WLANPiShark.bat -c 100 -f "wlan type mgt subtype beacon"
 ```
 
 ## Filtering
