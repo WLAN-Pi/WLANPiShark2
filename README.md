@@ -110,5 +110,14 @@ You can check your version of Plink by running "plink.exe -V" from a Windows com
 #           checks and dump out config data for bug/issue
 #           reports
 # 
+# v0.03 - N.Bowden 18th July 2019
+#
+#        1. Added interactive mode to optionally allow entry of
+#           channel number & width if INTERACTIVE var set to
+#           non zero value (set to 1 for instance), or CLI option
+#           "--int". Props to Paul Manders for the code & idea. Also
+#           added diagnostics mode via CLI "--diag" option to show
+#           if config vars configured correctly
+#
 #################################################################
 ```
