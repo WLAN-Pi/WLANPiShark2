@@ -60,7 +60,7 @@ Check config settings:
  WLANPiShark.bat --diag
 ```
 
-Wse in interactive mode:
+Use in interactive mode:
 
 ```
  WLANPiShark.bat --int
