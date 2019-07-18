@@ -46,9 +46,29 @@ The scripts/batch files that are used by this project are listed below. Each has
 
 (See the dedicated batch file page for full details: [WLANPiShark.bat](https://github.com/WLAN-Pi/WLANPiShark2/blob/master/doc/WLANPiShark.bat.md))
 
+### Examples
+
+Capture on channel 36 using a 40MHz channel width:
+
+```
+ WLANPiShark.bat -c 36 -w 40+
+```
+
+Check config settings:
+
+```
+ WLANPiShark.bat --diag
+```
+
+Wse in interactive mode:
+
+```
+ WLANPiShark.bat --int
+```
+
 # Current Version
 
-The current version is v0.02. Check your version with the CLI command:
+The current version is v0.03. Check your version with the CLI command:
 
 ```
  WLANPiShark.bat -v
