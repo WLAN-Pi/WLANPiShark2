@@ -76,7 +76,7 @@ set "INTERACTIVE=0"
 REM ############### NOTHING TO SET BELOW HERE #######################
 :init
     set "__NAME=%~n0"
-    set "__VERSION=0.02"
+    set "__VERSION=0.03"
     set "__YEAR=2019"
 
     set "__BAT_FILE=%~0"
@@ -447,7 +447,9 @@ REM #
 REM #        1. Added interactive mode to optionally allow entry of
 REM #           channel number & width if INTERACTIVE var set to
 REM #           non zero value (set to 1 for instance), or CLI option
-REM #           "--int". Props to Paul Manders for the code & idea
+REM #           "--int". Props to Paul Manders for the code & idea. Also
+REM #           added diagnostics mode via CLI "--diag" option to show
+REM #           if config vars configured correctly
 REM #
 REM #################################################################
 
