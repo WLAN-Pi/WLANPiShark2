@@ -68,8 +68,7 @@ set WLAN_PI_USER=wlanpi
 set WLAN_PI_PWD=wlanpi
 set WLAN_PI_IP=192.168.42.1
 set WIRESHARK_EXE=C:\Program Files\Wireshark\Wireshark.exe
-rem set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
-set PLINK=C:\Users\Nigel Bowden\Downloads\Plink\0.71\plink.exe
+set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
 
