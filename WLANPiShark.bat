@@ -71,6 +71,7 @@ set WIRESHARK_EXE=C:\Program Files\Wireshark\Wireshark.exe
 set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
+set "INTERACTIVE=0"
 
 REM ############### NOTHING TO SET BELOW HERE #######################
 :init
@@ -87,6 +88,7 @@ REM ############### NOTHING TO SET BELOW HERE #######################
     set "FILTER=wlan type mgt or wlan type ctl or wlan type data"
     set "SLICE=0"
     set "DEBUG=0"
+
 
 :parse
     if "%~1"=="" goto :validate
@@ -105,6 +107,9 @@ REM ############### NOTHING TO SET BELOW HERE #######################
     if /i "%~1"=="--upgrade"  goto :upgrade
     
     if /i "%~1"=="--diag"     goto :diag
+    
+    if /i "%~1"=="--int"      set "INTERACTIVE=1" goto :validate
+    
       
     rem If you pass the -d option, Wireshark does not start
     if /i "%~1"=="-d"         set "DEBUG=1" & shift & goto :parse
@@ -131,8 +136,41 @@ REM ############### NOTHING TO SET BELOW HERE #######################
     goto :parse
 
 :validate
+
+    rem If interactive mode is chosen, prompt user for values
+    if NOT "%INTERACTIVE%"=="0" (
+    
+        echo.
+        echo  #####################################################################
+        echo    WLANPiShark Interactive Mode (Enter "x" to exit, "d" for diags^)
+        echo  #####################################################################
+        echo.
+        echo.
+        echo  Current settings:
+        echo.
+        echo   Wireshark file location setting: ["%WIRESHARK_EXE%"]
+        echo   Putty plink file location setting: ["%PLINK%"]
+        echo   (Please correct within WLANPiShark.bat file if incorrect^) 
+        echo. 
+        echo   WLANPi IP Address setting: [%WLAN_PI_IP%]
+        echo.
+    )
+    
+    rem # This weird IF arrangement is to do with variable scoping when
+    rem # checking the entered value....horrible isn't it?
+    if NOT "%INTERACTIVE%"=="0" (
+        set /p CHANNEL_NUMBER="Enter channel number: "
+    )
+    if "%CHANNEL_NUMBER%"=="x" goto :end
+    if "%CHANNEL_NUMBER%"=="d" goto :diag
+    
+    if NOT "%INTERACTIVE%"=="0" (
+        set /p CHANNEL_WIDTH="Enter channel width(20/40+/40-/80): "
+    )
+    if "%CHANNEL_WIDTH%"=="x" goto :end
+    if "%CHANNEL_WIDTH%"=="d" goto :diag
+
     rem Check mandatory fields supplied
-    rem if not defined CHANNEL_NUMBER call :missing_argument "Channel Number" & goto :end
     if "%CHANNEL_NUMBER%"=="0" call :missing_argument "Channel Number" & goto :end
 
 :width_check
@@ -212,9 +250,13 @@ goto :end
     echo.  %__BAT_NAME% -hh, --xhelp        shows extra help
     echo.  %__BAT_NAME% -v, --version       shows the version
     echo.  %__BAT_NAME% --diag              shows diagnostic info
+    echo.  %__BAT_NAME% --int               run in interactive mode
     IF "%IW_VER%"=="4.9" (
         echo.  %__BAT_NAME% -u, --upgrade       shows how to enable 80MHz capture
     )
+    echo.
+    echo  (To run permanently in interactive mode, set the INTERACTIVE variable to INTERACTIVE=1^)
+    echo.
     goto :end    
 
 :extra_help
@@ -235,9 +277,12 @@ goto :end
     echo.  %__BAT_NAME% -hh, --xhelp        shows extra help
     echo.  %__BAT_NAME% -v, --version       shows the version
     echo.  %__BAT_NAME% --diag              shows diagnostic info
+    echo.  %__BAT_NAME% --int               run in interactive mode
     IF "%IW_VER%"=="4.9" (
         echo.  %__BAT_NAME% -u, --upgrade       shows how to enable 80MHz capture
     )
+    echo.
+    echo  (To run permanently in interactive mode, set the INTERACTIVE variable to INTERACTIVE=1^)
     echo.
     echo   Command Line Capture Options:
     echo.
@@ -306,47 +351,50 @@ goto :end
 
 :diag
 
+echo.
+echo  -------------------- WLANPIShark Diagnostics ------------------------
+echo .
 rem Check Plink file
-echo ==========================
-echo  Plink checks
-echo ==========================
-echo Plink file path: %PLINK%
+echo  ==========================
+echo   Plink checks
+echo  ==========================
+echo   Plink file path: %PLINK%
 if exist "%PLINK%" (
-    echo File check: Plink file detected OK
+    echo   File check: Plink file detected OK
 ) else (
-    echo File check: Plink file not detected - please check path configured
+    echo   File check: Plink file not detected - please check path configured
 )
 
 "%PLINK%" -V > %TEMP%\plink_ver.txt
 set /P PLINKVER=<%TEMP%\plink_ver.txt
 del %TEMP%\plink_ver.txt
-echo Version check: %PLINKVER%
+echo   Version check: %PLINKVER%
 
 rem Check Wireshark file
-echo ==========================
-echo  Wireshark checks
-echo ==========================
-echo Wireshark file path: %WIRESHARK_EXE%
+echo  ==========================
+echo   Wireshark checks
+echo  ==========================
+echo   Wireshark file path: %WIRESHARK_EXE%
 if exist "%WIRESHARK_EXE%" (
-    echo File check: Wireshark file detected OK
+    echo   File check: Wireshark file detected OK
 ) else (
-    echo File check: Wireshark file not detected - please check path configured
+    echo   File check: Wireshark file not detected - please check path configured
 )
 
 "%WIRESHARK_EXE%" -v > %TEMP%\ws_ver.txt
 set /P WSVER=<%TEMP%\ws_ver.txt
 del %TEMP%\ws_ver.txt
-echo Version check: %WSVER%
+echo   Version check: %WSVER%
 
 rem Dump vars
-echo ==========================
-echo  Configured variables
-echo ==========================
-echo WLANPi username: %WLAN_PI_USER%
-echo WLANPi user account pwd: %WLAN_PI_PWD%
-echo WLANPi IP address: %WLAN_PI_IP%
-echo WLANPi wireless LAN interface name: %WLAN_PI_IFACE%
-echo IW version: %IW_VER%
+echo  ==========================
+echo   Configured variables
+echo  ==========================
+echo   WLANPi username: %WLAN_PI_USER%
+echo   WLANPi user account pwd: %WLAN_PI_PWD%
+echo   WLANPi IP address: %WLAN_PI_IP%
+echo   WLANPi wireless LAN interface name: %WLAN_PI_IFACE%
+echo   IW version: %IW_VER%
 
 goto :end
 
@@ -394,5 +442,12 @@ REM #        2. Added new "--diag" CLI option to do some basic
 REM #           checks and dump out config data for bug/issue
 REM #           reports
 REM # 
+REM # v0.03 - N.Bowden 18th July 2019
+REM #
+REM #        1. Added interactive mode to optionally allow entry of
+REM #           channel number & width if INTERACTIVE var set to
+REM #           non zero value (set to 1 for instance), or CLI option
+REM #           "--int". Props to Paul Manders for the code & idea
+REM #
 REM #################################################################
 
