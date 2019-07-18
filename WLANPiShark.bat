@@ -71,7 +71,7 @@ set WIRESHARK_EXE=C:\Program Files\Wireshark\Wireshark.exe
 set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
-set "INTERACTIVE=0"
+set INTERACTIVE=0
 
 REM ############### NOTHING TO SET BELOW HERE #######################
 :init
