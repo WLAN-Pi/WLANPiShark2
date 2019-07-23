@@ -16,7 +16,7 @@ import getopt
 import subprocess
 
 __author__ = 'Nigel Bowden'
-__version__ = '0.02'
+__version__ = '0.03'
 __email__ = 'wifinigel@gmail.com'
 __status__ = 'beta'
 
