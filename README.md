@@ -30,7 +30,7 @@ The scripts/batch files that are used by this project are listed below. Each has
 
 Here's a quick guide to get you going with WLANPiShark:
 
-1. Browse to the web GUI of your WLANPi (http://<IP Addr of your WLANPi>)
+1. Browse to the web GUI of your WLANPi (http://{IP Addr of your WLANPi})
 2. Click the "Downloads" link at the top of the page
 3. Click on the "wlanpishark" folder, then the WLANPiShark.bat file to download it
 4. Copy the file to a convenient location on your Windows machine (I'd suggest your home directory)
