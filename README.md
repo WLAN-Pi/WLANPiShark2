@@ -138,5 +138,12 @@ You can check your version of Plink by running "plink.exe -V" from a Windows com
 #           added diagnostics mode via CLI "--diag" option to show
 #           if config vars configured correctly
 #
+# v0.04 - N.Bowden/Reuben Eldal 5th Aug 2018
+#         Reuben supplied code to set date/time of WLANPi to 
+#         match the  machine running the batch file so that
+#         timestamps of captured data reflect current system 
+#         instead of internal WLANPi clock which is inaccurate 
+#         when not NTP sync'ed. Added new script variable and 
+#         CLI parameter to turn feature on or off
 #################################################################
 ```
