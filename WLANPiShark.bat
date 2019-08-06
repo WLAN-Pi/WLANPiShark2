@@ -72,11 +72,12 @@ set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
 set INTERACTIVE=0
+set TIMESET=1
 
 REM ############### NOTHING TO SET BELOW HERE #######################
 :init
     set "__NAME=%~n0"
-    set "__VERSION=0.03"
+    set "__VERSION=0.04"
     set "__YEAR=2019"
 
     set "__BAT_FILE=%~0"
@@ -131,6 +132,9 @@ REM ############### NOTHING TO SET BELOW HERE #######################
     
     if /i "%~1"=="--ip"       set "WLAN_PI_IP=%~2"     & shift & shift & goto :parse
     if /i "%~1"=="-i"         set "WLAN_PI_IP=%~2"     & shift & shift & goto :parse
+    
+    if /i "%~1"=="--timeset"  set "TIMESET=%~2"        & shift & shift & goto :parse
+    if /i "%~1"=="-t"         set "TIMESET=%~2"        & shift & shift & goto :parse
 
     shift
     goto :parse
@@ -175,13 +179,19 @@ REM ############### NOTHING TO SET BELOW HERE #######################
 
 :width_check
     rem Set channel width to correct value to pass to WLANPi 
-    if "%CHANNEL_WIDTH%"=="20"  set "CHANNEL_WIDTH=HT20"  & goto :main
-    if "%CHANNEL_WIDTH%"=="40+" set "CHANNEL_WIDTH=HT40+" & goto :main
-    if "%CHANNEL_WIDTH%"=="40-" set "CHANNEL_WIDTH=HT40-" & goto :main
+    if "%CHANNEL_WIDTH%"=="20"  set "CHANNEL_WIDTH=HT20"  & goto :timeset_check
+    if "%CHANNEL_WIDTH%"=="40+" set "CHANNEL_WIDTH=HT40+" & goto :timeset_check
+    if "%CHANNEL_WIDTH%"=="40-" set "CHANNEL_WIDTH=HT40-" & goto :timeset_check
     if not "%IW_VER%"=="4.9" (
-        if "%CHANNEL_WIDTH%"=="80" set "CHANNEL_WIDTH=80MHz" & goto :main
+        if "%CHANNEL_WIDTH%"=="80" set "CHANNEL_WIDTH=80MHz" & goto :timeset_check
     )
     call :incorrect_argument "Channel Width" %CHANNEL_WIDTH% & goto :end
+
+:timeset_check
+    rem Check timeset var is valid value 
+    if "%TIMESET%"=="1" goto :main
+    if "%TIMESET%"=="0" goto :main
+    call :incorrect_argument "Time Set (Should be 1 or 0)" %TIMESET% & goto :end
 
 :main
 
@@ -204,6 +214,21 @@ If NOT "%PLINKVER%"=="%PLINKVER:0.75=%" set PLINK_MOD=-no-antispoof
 if "%DEBUG%"=="1" goto :debug
 
 echo Starting session to device %WLAN_PI_IP% ...
+
+rem Don't set time if time setting disabled
+IF %TIMESET%==0 goto :nodate
+
+rem Setting WLANPi time to current time (uses UTC for global compatibility)
+rem As this uses Powershell to get UTC time, check Powershell is available
+where /q powershell.exe
+IF ERRORLEVEL 1 goto :nodate
+
+powershell.exe (get-date)::Now.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') > "%TEMP%\locatime.txt"
+set /P datetime=<"%TEMP%\locatime.txt"
+"%PLINK%" -ssh -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S date -s '%datetime%' 2>&1
+echo Updated WLANPi time to: %datetime%
+
+:nodate
 
 Rem - Start remote commands on WLANPi
 "%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -f %FILTER% | "%WIRESHARK_EXE%" -k -i -
@@ -236,14 +261,14 @@ goto :end
     echo  USAGE:
     echo.
     IF not "%IW_VER%"=="4.9" (
-        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- ^| 80 } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn }
+        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- ^| 80 } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn } { --timeset 0 ^| 1 }
         echo.
-        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- ^| 80 } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn}
+        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- ^| 80 } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn } { -t 0 ^| 1 }
         
     ) ELSE (
-        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn }
+        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn } { --timeset 0 ^| 1 }
         echo.
-        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn}
+        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn} { -t 0 ^| 1 }
     )
     echo.
     echo.  %__BAT_NAME% -h, --help          shows basic help
@@ -263,14 +288,14 @@ goto :end
     echo  HELP:
     echo.
     if not "%IW_VER%"=="4.9" (
-        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- ^| 80 } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn }
+        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- ^| 80 } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn } { --timeset 0 ^| 1 }
         echo.
-        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- ^| 80 } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn}
+        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- ^| 80 } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn}  { -t 0 ^| 1 }
         
     ) ELSE (
-        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn }
+        echo   %__BAT_NAME% [--channel nn] { --width 20 ^| 40+ ^| 40- } { --filter "capture filter"} { --slice nnn } { --ip nnn.nnn.nnn.nnn } { --timeset 0 ^| 1 }
         echo.
-        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn}
+        echo   %__BAT_NAME% [-c nn] { -w 20 ^| 40+ ^| 40- } { -f "capture filter"} { -s nnn } { -i nnn.nnn.nnn.nnn}  { -t0 ^| 1 }
     )
     echo.
     echo.  %__BAT_NAME% -h, --help          shows basic help
@@ -308,6 +333,9 @@ goto :end
     echo.
     echo    --ip or -i      : (Optional) IP address of WLANPi. Note that if this is ommitted, the hard coded version in the 
     echo                                 batch file itself will be used
+    echo.
+    echo    --timeset or -t : (Optional) Set clock on WLANPi to match Windows machine running WLANPiShark.bat
+    echo                      0 = turn feature off, 1 = turn feature on (default)
     echo.
     echo   Example:
     echo.
@@ -395,6 +423,7 @@ echo   WLANPi user account pwd: %WLAN_PI_PWD%
 echo   WLANPi IP address: %WLAN_PI_IP%
 echo   WLANPi wireless LAN interface name: %WLAN_PI_IFACE%
 echo   IW version: %IW_VER%
+echo   Set WLANPi time: %TIMESET%
 
 goto :end
 
@@ -451,5 +480,13 @@ REM #           "--int". Props to Paul Manders for the code & idea. Also
 REM #           added diagnostics mode via CLI "--diag" option to show
 REM #           if config vars configured correctly
 REM #
+REM # v0.04 - N.Bowden/Reuben Eldal 5th Aug 2018
+REM #         Reuben supplied code to set date/time of WLANPi to 
+REM #         match the  machine running the batch file so that
+REM #         timestamps of captured data reflect current system 
+REM #         instead of internal WLANPi clock which is inaccurate 
+REM #         when not NTP sync'ed. Added new script variable and 
+REM #         CLI parameter to turn feature on or off
+REM # 
 REM #################################################################
 
