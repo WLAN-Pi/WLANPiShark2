@@ -87,7 +87,7 @@ For more detailed information, see the following page: [WLANPiShark.bat](https:/
 
 # Current Version
 
-The current version is v0.03. Check your version with the CLI command:
+The current version is v0.04. Check your version with the CLI command:
 
 ```
  WLANPiShark.bat -v

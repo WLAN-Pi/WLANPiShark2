@@ -16,7 +16,7 @@ import getopt
 import subprocess
 
 __author__ = 'Nigel Bowden'
-__version__ = '0.03'
+__version__ = '0.04'
 __email__ = 'wifinigel@gmail.com'
 __status__ = 'beta'
 
@@ -51,7 +51,7 @@ def usage():
     print(" ")
     sys.exit()
 
-# proces sthe CLI parameters passed to this script 
+# process the CLI parameters passed to this script 
 
 try:
     opts, args = getopt.getopt(sys.argv[1:],'i:w:c:s:f:hdv')
