@@ -68,7 +68,7 @@ set WLAN_PI_USER=wlanpi
 set WLAN_PI_PWD=wlanpi
 set WLAN_PI_IP=192.168.42.1
 set WIRESHARK_EXE=C:\Program Files\Wireshark\Wireshark.exe
-set PLINK=C:\Program Files (x86)\PuTTY\plink.exe
+set PLINK=C:\Program Files\PuTTY\plink.exe
 set WLAN_PI_IFACE=wlan0
 set IW_VER=4.9
 set INTERACTIVE=0
@@ -77,7 +77,7 @@ set TIMESET=1
 REM ############### NOTHING TO SET BELOW HERE #######################
 :init
     set "__NAME=%~n0"
-    set "__VERSION=0.04"
+    set "__VERSION=0.05"
     set "__YEAR=2019"
 
     set "__BAT_FILE=%~0"
@@ -225,13 +225,13 @@ IF ERRORLEVEL 1 goto :nodate
 
 powershell.exe (get-date)::Now.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ') > "%TEMP%\locatime.txt"
 set /P datetime=<"%TEMP%\locatime.txt"
-"%PLINK%" -ssh -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S date -s '%datetime%' 2>&1
+"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S date -s '%datetime%' 2>&1
 echo Updated WLANPi time to: %datetime%
 
 :nodate
 
 Rem - Start remote commands on WLANPi
-"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -f %FILTER% | "%WIRESHARK_EXE%" -k -i -
+"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /usr/bin/python /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -f %FILTER% | "%WIRESHARK_EXE%" -k -i -
 
 goto :end
 
@@ -246,7 +246,9 @@ echo Channel width: %CHANNEL_WIDTH%
 echo Interface: %WLAN_PI_IFACE%
 echo Slice: %SLICE%
 echo Filter: %FILTER%
-"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -d -f %FILTER%
+echo Plink Ver: %PLINKVER%
+echo Plink Mod: %PLINK_MOD%
+"%PLINK%" -ssh %PLINK_MOD% -pw %WLAN_PI_PWD% %WLAN_PI_USER%@%WLAN_PI_IP% "echo %WLAN_PI_PWD% | sudo -S /usr/bin/python /home/wlanpi/wlanpishark/wlanpishark.py -c %CHANNEL_NUMBER% -w %CHANNEL_WIDTH%" -i %WLAN_PI_IFACE% -s %SLICE% -d -f %FILTER%
 
 goto :end
 
@@ -487,6 +489,11 @@ REM #         timestamps of captured data reflect current system
 REM #         instead of internal WLANPi clock which is inaccurate 
 REM #         when not NTP sync'ed. Added new script variable and 
 REM #         CLI parameter to turn feature on or off
+REM #
+REM # v0.05 - N.Bowden/Chris Young 26th Aug 2018
+REM #         Thanks to Chris Young for reporting a bug. When setting
+REM #         date of WLANPi, I had missed out -no-antispoof command
+REM #         when firing up Plink to set date (doh!)
 REM # 
 REM #################################################################
 
