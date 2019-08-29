@@ -145,5 +145,14 @@ You can check your version of Plink by running "plink.exe -V" from a Windows com
 #         instead of internal WLANPi clock which is inaccurate 
 #         when not NTP sync'ed. Added new script variable and 
 #         CLI parameter to turn feature on or off
+#
+# v0.05 - N.Bowden/Chris Young 29th Aug 2018
+#         Thanks to Chris Young for reporting a bug. When setting
+#         date of WLANPi, I had missed out -no-antispoof command
+#         when firing up Plink to set date (doh!)
+#
+#         Added full python path to remote python script calls to 
+#         mitigate possible file permission issues in future
+#
 #################################################################
 ```

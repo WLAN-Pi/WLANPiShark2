@@ -490,10 +490,14 @@ REM #         instead of internal WLANPi clock which is inaccurate
 REM #         when not NTP sync'ed. Added new script variable and 
 REM #         CLI parameter to turn feature on or off
 REM #
-REM # v0.05 - N.Bowden/Chris Young 26th Aug 2018
+REM # v0.05 - N.Bowden/Chris Young 29th Aug 2018
 REM #         Thanks to Chris Young for reporting a bug. When setting
 REM #         date of WLANPi, I had missed out -no-antispoof command
 REM #         when firing up Plink to set date (doh!)
 REM # 
+REM #
+REM #         Added full python path to remote python script calls to 
+REM #         mitigate possible file permission issues in future
+REM #
 REM #################################################################
 
